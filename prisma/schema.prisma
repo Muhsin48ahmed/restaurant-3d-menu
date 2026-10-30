@@ -1,0 +1,96 @@
+// SQLite for local dev. Switch provider to "postgresql" for production.
+// SQLite has no enums, so status fields are strings validated in src/lib/domain.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model MenuCategory {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  sortOrder Int        @default(0)
+  items     MenuItem[]
+}
+
+model MenuItem {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String
+  priceCents  Int
+  // Photo shown in the menu list, and in place of 3D when there is no scan.
+  imageUrl    String?
+  // Path or URL of a scanned .glb. If empty, public/models/<slug>.glb is used when present.
+  modelUrl    String?
+  accentColor String       @default("#E2683C")
+  tags        String       @default("")
+  calories    Int?
+  isAvailable Boolean      @default(true)
+  // Retired dishes stay for order history but are hidden from the menu.
+  isArchived  Boolean      @default(false)
+  sortOrder   Int          @default(0)
+  categoryId  String
+  category    MenuCategory @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  customerName  String
+  email         String
+  phone         String
+  pickupAt      DateTime
+  notes         String      @default("")
+  status        String      @default("RECEIVED")
+  subtotalCents Int
+  taxCents      Int
+  totalCents    Int
+  createdAt     DateTime    @default(now())
+  items         OrderItem[]
+
+  @@index([pickupAt])
+}
+
+model OrderItem {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId     String
+  menuItem       MenuItem @relation(fields: [menuItemId], references: [id])
+  // Snapshot so later menu edits don't rewrite order history.
+  name           String
+  unitPriceCents Int
+  quantity       Int
+}
+
+model DiningTable {
+  id           String        @id @default(cuid())
+  label        String        @unique
+  seats        Int
+  reservations Reservation[]
+}
+
+model Reservation {
+  id        String      @id @default(cuid())
+  code      String      @unique
+  name      String
+  email     String
+  phone     String
+  partySize Int
+  startAt   DateTime
+  endAt     DateTime
+  notes     String      @default("")
+  status    String      @default("CONFIRMED")
+  tableId   String
+  table     DiningTable @relation(fields: [tableId], references: [id])
+  createdAt DateTime    @default(now())
+
+  @@index([startAt])
+}

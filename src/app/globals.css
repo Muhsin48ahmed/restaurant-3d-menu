@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f7f3ec;
+  --color-paper-2: #efe8dc;
+  --color-paper-3: #e6dccc;
+  --color-ink: #1f1b16;
+  --color-ink-soft: #4a4239;
+  --color-muted: #8a7f71;
+  --color-line: #ddd3c3;
+  --color-accent: #8c3b1e;
+  --color-accent-dark: #6f2d15;
+  --color-success: #4f6b3a;
+  --color-danger: #a8321f;
+
+  --font-display: var(--font-serif), "Times New Roman", serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --tracking-label: 0.18em;
+}
+
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@utility btn {
+  @apply inline-flex min-h-12 items-center justify-center gap-3 px-7 text-[0.7rem] font-semibold tracking-[var(--tracking-label)] uppercase transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-40;
+}
+@utility btn-primary {
+  @apply btn bg-ink text-paper hover:bg-accent;
+}
+@utility btn-ghost {
+  @apply btn border border-ink/25 text-ink hover:border-ink hover:bg-ink hover:text-paper;
+}
+@utility link-underline {
+  @apply inline-flex items-center gap-2 border-b border-ink/30 pb-1 text-[0.7rem] font-semibold tracking-[var(--tracking-label)] text-ink uppercase transition-colors hover:border-accent hover:text-accent;
+}
+@utility field {
+  @apply w-full border-0 border-b border-line bg-transparent px-0 py-3 text-base text-ink placeholder:text-muted/70 focus:border-ink focus:ring-0 focus:outline-none;
+}
+@utility label {
+  @apply mb-1 block text-[0.65rem] font-semibold tracking-[var(--tracking-label)] text-muted uppercase;
+}
+@utility card {
+  @apply border border-line bg-paper;
+}
+@utility eyebrow {
+  @apply text-[0.68rem] font-semibold tracking-[var(--tracking-label)] text-accent uppercase;
+}
+@utility display {
+  @apply font-display leading-[0.98] font-normal tracking-[-0.015em];
+}
